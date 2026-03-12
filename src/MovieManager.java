@@ -1,3 +1,4 @@
+import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -38,30 +39,39 @@ public class MovieManager {//array
 
     public void showMainMenu() {
         while (true) {
-            // Top decorative separator + Title
-            System.out.println("\n=========================================");
-            System.out.println("          🎬 Douban Movie Manager         ");
-            System.out.println("=========================================");
-            // Menu options (unified indentation + alignment, add icon indicators)
-            System.out.println("  1. 📋 View all movies");
-            System.out.println("  2. ➕ Add new movies");
-            System.out.println("  3. 🔍 Search movies");
-            System.out.println("  4. ❌ Delete movies");
-            System.out.println("  5. ✏️ Modify movie information");
-            System.out.println("  6. 📊 Show movie data by ranking level");
-            System.out.println("  7. ⭐ Rating ranking list");
-            System.out.println("  0. 🚪 Log out");
-            // Bottom separator + prominent input prompt
-            System.out.println("=========================================");
-            System.out.print("  👉 Please select an operation (enter the corresponding number): ");
+            String[] options = {
+                    "1. View all movies",
+                    "2. Add new movies",
+                    "3. Search movies",
+                    "4. Delete movies",
+                    "5. Modify movie information",
+                    "6. Show movie data by ranking level",
+                    "7. Rating ranking list",
+                    "0. Log out"
+            };
 
-            int choice1 = scanner.nextInt();
-            scanner.nextLine();
+            int choice = JOptionPane.showOptionDialog(
+                    null,
+                    "Please select an operation:",
+                    "Douban Movie Manager",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
+
+            if (choice == -1) {
+                JOptionPane.showMessageDialog(null, "Logging out...", "Info", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            }
+
+            int choice1 = (choice == 7) ? 0 : choice + 1;
+
             switch (choice1) {
                 case 1:
                     displayAllMovies();
                     break;
-                // Keep the original logic for other cases
                 case 2:
                     addNewMovie();
                     break;
@@ -81,14 +91,14 @@ public class MovieManager {//array
                     showRatingRanking();
                     break;
                 case 0:
-                    System.out.println("Thank you for using!The data has been automatically saved");
+                    JOptionPane.showMessageDialog(null, "Logged out successfully!", "Info", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 default:
-                    System.out.println("Invalid selection,please re-enter");
+                    JOptionPane.showMessageDialog(null, "Invalid option, please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    break;
             }
         }
     }
-
 
 
 
