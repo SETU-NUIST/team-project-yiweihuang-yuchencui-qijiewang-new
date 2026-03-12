@@ -1,41 +1,62 @@
+import javax.swing.JOptionPane;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) {
+        JOptionPane.showMessageDialog(
+                null,
+                "Welcome to Douban Movie Management System",
+                "Welcome",
+                JOptionPane.INFORMATION_MESSAGE
+        );
 
-        System.out.println("╔════════════════════════════════════════════════════╗");
-        System.out.println("║                                                    ║");
-        System.out.println("║       Welcome to Douban Movie Management System    ║");
-        System.out.println("║                                                    ║");
-        System.out.println("╚════════════════════════════════════════════════════╝");
-        //System.out.println("Please log in first!");
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter your username:");
-        String username = scanner.nextLine();
-        System.out.println("Please enter your password:");
-        String password = scanner.nextLine();
+        String username = JOptionPane.showInputDialog(
+                null,
+                "Please enter your username:",
+                "Login",
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        String password = JOptionPane.showInputDialog(
+                null,
+                "Please enter your password:",
+                "Login",
+                JOptionPane.QUESTION_MESSAGE
+        );
+
         String correctUsername = "Qijie,Wang";
         String correctPassword = "123456";
-        if (username.equals(correctUsername)){
-            if (password.equals(correctPassword)){
-                System.out.println("Login successful!Welcome to use the system ~");
-            }else {
-                System.out.println("Wrong password,please try again");
-            }
 
+        if (username != null && username.equals(correctUsername)) {
+            if (password != null && password.equals(correctPassword)) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Login successful! Welcome to use the system ~",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Wrong password, please try again",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
         } else {
-            System.out.println("Wrong account,try please again");}
-        //haha,i made a commit
-        //Create movie manager and display menu
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Wrong account, try please again",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+        // 5. 后续电影管理逻辑不变
         MovieManager manager = new MovieManager();
         manager.initializeSimpleMovies();
         manager.showMainMenu();
-        //test messages:嗨害嗨，来了奥
-
-
     }
-
-
 
 
 
