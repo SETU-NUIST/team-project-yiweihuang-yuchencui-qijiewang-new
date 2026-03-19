@@ -1,0 +1,50 @@
+<list>
+  <Movie>
+    <title>The Shawshank Redemption</title>
+    <director>Frank Darabont</director>
+    <year>1994</year>
+    <rating>9.7</rating>
+    <genre>Drama/Crime</genre>
+    <review>Hope can set you free</review>
+  </Movie>
+  <Movie>
+    <title>Farewell My Concubine</title>
+    <director>Chen Kaige</director>
+    <year>1993</year>
+    <rating>9.6</rating>
+    <genre>Drama/Romance</genre>
+    <review>A timeless classic</review>
+  </Movie>
+  <Movie>
+    <title>Leon: The Professional</title>
+    <director>Luc Besson</director>
+    <year>1994</year>
+    <rating>9.4</rating>
+    <genre>Drama/Crime</genre>
+    <review>The story of a hitman</review>
+  </Movie>
+  <Movie>
+    <title>Interstellar</title>
+    <director>Christopher Nolan</director>
+    <year>2014</year>
+    <rating>9.4</rating>
+    <genre>Sci-fi/Adventure</genre>
+    <review>Love transcends time and space</review>
+  </Movie>
+  <Movie>
+    <title>Spirited Away</title>
+    <director>Hayao Miyazaki</director>
+    <year>2001</year>
+    <rating>9.4</rating>
+    <genre>Animation/Fantasy</genre>
+    <review>Best of Miyazaki</review>
+  </Movie>
+  <Movie>
+    <title>Harry Potter</title>
+    <director>JK</director>
+    <year>2003</year>
+    <rating>10.0</rating>
+    <genre>Drama</genre>
+    <review>magic</review>
+  </Movie>
+</list>
