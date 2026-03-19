@@ -1,501 +1,302 @@
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
-public class MovieManager {//array
-    private Scanner scanner;
-    private static final int MAX_MOVIES = 100;  //the max number of the film
-    ArrayList<Movie> addMovie = new ArrayList<>();
+
+public class MovieManager {
+    private ArrayList<Movie> addMovie = new ArrayList<>();
+    // 保存电影列表到 XML 文件
+    public void saveToXML() {
+        XStream xstream = new XStream(new DomDriver());
+        // 允许序列化 Movie 类
+        xstream.allowTypes(new Class[]{Movie.class});
+
+        try (FileWriter writer = new FileWriter("movies.xml")) {
+            // 将 ArrayList<Movie> 转为 XML 并写入文件
+            xstream.toXML(addMovie, writer);
+            JOptionPane.showMessageDialog(
+                    null,
+                    "数据已成功保存到 movies.xml",
+                    "保存成功",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "保存失败：" + e.getMessage(),
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+    // 从 XML 文件加载电影列表
+    public void loadFromXML() {
+        XStream xstream = new XStream(new DomDriver());
+        // 允许反序列化 Movie 和 ArrayList 类
+        xstream.allowTypes(new Class[]{Movie.class, ArrayList.class});
+
+        try (FileReader reader = new FileReader("movies.xml")) {
+            // 从 XML 读取并转换为 ArrayList<Movie>
+            ArrayList<Movie> loadedMovies = (ArrayList<Movie>) xstream.fromXML(reader);
+            // 清空当前数据，加载新数据
+            addMovie.clear();
+            addMovie.addAll(loadedMovies);
+            JOptionPane.showMessageDialog(
+                    null,
+                    "数据已成功从 movies.xml 加载",
+                    "加载成功",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "加载失败：" + e.getMessage(),
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
 
     public MovieManager() {
-        scanner = new Scanner(System.in);
+        // 构造函数不再需要初始化 Scanner
     }
 
-    //add some films data in advance
-
+    /**
+     * 初始化预设电影数据
+     */
     public void initializeSimpleMovies() {
-        addMovie(new Movie("The Shawshank Redemption", "Frank Darabont", 1994, 9.7,
-                "Drama/Crime", "Hope can set you free"));
-
-        addMovie(new Movie("Farewell My Concubine", "Chen Kaige", 1993, 9.6,
-                "Drama/Romance", "A timeless classic"));
-
-        addMovie(new Movie("Leon: The Professional", "Luc Besson", 1994, 9.4,
-                "Drama/Crime", "The story of a hitman and a young girl"));
-
-        addMovie(new Movie("Interstellar", "Christopher Nolan", 2014, 9.4,
-                "Sci-fi/Adventure", "Love is the one thing that transcends time and space"));
-
-        addMovie(new Movie("Spirited Away", "Hayao Miyazaki", 2001, 9.4,
-                "Animation/Fantasy", "Best of Miyazaki, best of Joe Hisaishi"));
+        addMovie.add(new Movie("The Shawshank Redemption", "Frank Darabont", 1994, 9.7, "Drama/Crime", "Hope can set you free"));
+        addMovie.add(new Movie("Farewell My Concubine", "Chen Kaige", 1993, 9.6, "Drama/Romance", "A timeless classic"));
+        addMovie.add(new Movie("Leon: The Professional", "Luc Besson", 1994, 9.4, "Drama/Crime", "The story of a hitman"));
+        addMovie.add(new Movie("Interstellar", "Christopher Nolan", 2014, 9.4, "Sci-fi/Adventure", "Love transcends time and space"));
+        addMovie.add(new Movie("Spirited Away", "Hayao Miyazaki", 2001, 9.4, "Animation/Fantasy", "Best of Miyazaki"));
     }
 
-    private void addMovie(Movie movie) {
-        addMovie.add(movie);
-    }
-
-    //show the menu
-
+    /**
+     * 主菜单界面
+     */
     public void showMainMenu() {
         while (true) {
+            // 1. 定义菜单选项（顺序和 case 严格对应）
             String[] options = {
                     "1. View all movies",
-                    "2. Add new movies",
+                    "2. Add new movie",
                     "3. Search movies",
-                    "4. Delete movies",
-                    "5. Modify movie information",
-                    "6. Show movie data by ranking level",
-                    "7. Rating ranking list",
+                    "4. Delete movie",
+                    "5. Modify movie",
+                    "6. Show data by ranking level",
+                    "7. Rating list",
+                    "8. Save to XML",
+                    "9. Load from XML",
                     "0. Log out"
             };
 
+            // 2. 弹出选择对话框
             int choice = JOptionPane.showOptionDialog(
                     null,
                     "Please select an operation:",
                     "Douban Movie Manager",
                     JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
+                    JOptionPane.PLAIN_MESSAGE,
                     null,
                     options,
                     options[0]
             );
 
-            if (choice == -1) {
-                JOptionPane.showMessageDialog(null, "Logging out...", "Info", JOptionPane.INFORMATION_MESSAGE);
-                break;
-            }
-
-            int choice1 = (choice == 7) ? 0 : choice + 1;
-
-            switch (choice1) {
-                case 1:
-                    displayAllMovies();
-                    break;
-                case 2:
-                    addNewMovie();
-                    break;
-                case 3:
-                    searchMovie();
-                    break;
-                case 4:
-                    deleteMovie();
-                    break;
-                case 5:
-                    updateMovie();
-                    break;
-                case 6:
-                    showDataByRankingLevel();
-                    break;
-                case 7:
-                    showRatingRanking();
-                    break;
-                case 0:
-                    JOptionPane.showMessageDialog(null, "Logged out successfully!", "Info", JOptionPane.INFORMATION_MESSAGE);
+            // 3. 优先处理菜单功能（switch 放在前面）
+            switch (choice) {
+                case 0 -> displayAllMovies();
+                case 1 -> addNewMovie();
+                case 2 -> searchMovie();
+                case 3 -> deleteMovie();
+                case 4 -> updateMovie();
+                case 5 -> showDataByRankingLevel();
+                case 6 -> showRatingRanking();
+                case 7 -> saveToXML();      // 绑定保存XML
+                case 8 -> loadFromXML();   // 绑定加载XML
+                case 9 -> {                // 手动选择 Log out 时退出
+                    JOptionPane.showMessageDialog(null, "Logged out successfully!");
+                    return; // 退出整个菜单循环
+                }
+                case -1 -> { // 点击窗口关闭按钮时退出
+                    JOptionPane.showMessageDialog(null, "Logged out successfully!");
                     return;
-                default:
-                    JOptionPane.showMessageDialog(null, "Invalid option, please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-                    break;
-            }
-        }
-    }
-
-
-
-
-
-
-    private void showRatingRanking() {// Check if there's any movie data first
-        if (addMovie.isEmpty()) {
-            System.out.println("No movie data available!");
-            return;
-        }
-        int size = addMovie.size();
-        // Perform bubble sort on the ArrayList (descending order by rating)
-        for (int i = 0; i < size - 1; i++) { // Outer loop: control the number of sorting rounds (size-1 rounds total)
-            for (int j = 0; j < size - 1 - i; j++) { // Inner loop: compare adjacent elements, skip sorted tail elements
-                Movie movie1 = addMovie.get(j);
-                Movie movie2 = addMovie.get(j + 1);
-                // Descending order: swap if previous movie's rating is lower than the next
-                if (movie1.getRating() < movie2.getRating()) {
-                    // Swap elements in ArrayList using set method
-                    addMovie.set(j, movie2);
-                    addMovie.set(j + 1, movie1);
                 }
             }
         }
-        // Print the sorted ranking results
-        System.out.println("\n=== Movie Rating Ranking (High to Low) ===");
-        for (int i = 0; i < size; i++) {
-            Movie movie = addMovie.get(i);
-            System.out.printf("Rank %d: Title=%s, Rating=%.1f, Director=%s, Year=%d%n",
-                    i + 1, movie.getTitle(), movie.getRating(), movie.getDirector(), movie.getYear());
-        }
     }
 
 
-
-
-    //1.display movie data
-
-    // 1. Display all movies (with brief list + detail view support)
+    // 1. 查看所有电影
     public void displayAllMovies() {
-        // Fix: Check if movie list is empty (ArrayList won't be null after initialization)
         if (addMovie.isEmpty()) {
-            System.out.println("\n=========================================");
-            System.out.println("          ❌ No Movie Data Available          ");
-            System.out.println("=========================================");
-            return; // Exit method to avoid subsequent code execution
-        }
-
-        // Polished list header
-        System.out.println("\n=========================================");
-        System.out.println("          📋 All Movie List          ");
-        System.out.println("=========================================");
-        // Format brief info (index + title) with neat alignment
-        for (int i = 0; i < addMovie.size(); i++) {
-            Movie movie = addMovie.get(i);
-            System.out.printf("  %d. 《%s》%n", i + 1, movie.getTitle());
-        }
-
-        // User guidance (clearer prompt + visual indicator)
-        System.out.println("=========================================");
-        System.out.print("  👉 Enter sequence number to view details (0 to return): ");
-        int index = scanner.nextInt();
-        scanner.nextLine(); // Consume leftover newline from input
-
-        // Handle input logic
-        if (index == 0) {
-            System.out.println("\n← Returning to main menu...");
+            JOptionPane.showMessageDialog(null, "No movie data available!", "Info", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        // Validate input range
-        if (index > 0 && index <= addMovie.size()) {
-            Movie selected = addMovie.get(index - 1);
-            // Polished detail view (structured + full info)
-            System.out.println("\n=========================================");
-            System.out.println("          🎬 Movie Details          ");
-            System.out.println("=========================================");
-            System.out.printf("  Title:    %s%n", selected.getTitle());
-            System.out.printf("  Director: %s%n", selected.getDirector());
-            System.out.printf("  Year:     %d%n", selected.getYear());
-            System.out.printf("  Rating:   %.1f/10%n", selected.getRating());
-            System.out.printf("  Review:   %s%n", selected.getReview());
-            System.out.println("=========================================");
-        } else {
-            // Invalid input prompt (visual warning)
-            System.out.println("\n=========================================");
-            System.out.println("          ⚠️ Invalid Sequence Number!          ");
-            System.out.println("=========================================");
-        }
-    }
 
-
-
-
-
-    // 2. Add new movie (with input validation & polished feedback)
-    private void addNewMovie() {
-        // Polished header with decoration
-        System.out.println("\n=========================================");
-        System.out.println("          ➕ Add New Movie          ");
-        System.out.println("=========================================");
-
-        // 1. Input movie title (with prompt indicator)
-        System.out.print("  👉 Enter the movie title: ");
-        String title = scanner.nextLine();
-
-        // 2. Input director
-        System.out.print("  👉 Enter the director: ");
-        String director = scanner.nextLine();
-
-        // 3. Input year (add range validation)
-        int year = 0;
-        while (true) {
-            System.out.print("  👉 Enter the release year (e.g., 2023): ");
-            if (scanner.hasNextInt()) {
-                year = scanner.nextInt();
-                if (year > 1800 && year <= java.time.Year.now().getValue()) { // Reasonable year range
-                    scanner.nextLine(); // Consume leftover newline
-                    break;
-                } else {
-                    System.out.println("    ⚠️ Invalid year! Please enter a year between 1800 and current year.");
-                }
-            } else {
-                System.out.println("    ⚠️ Invalid input! Please enter a number.");
-                scanner.next(); // Clear invalid input
-            }
-        }
-
-        // 4. Input rating (add 0-10 range validation)
-        double rating = 0.0;
-        while (true) {
-            System.out.print("  👉 Enter the rating (0.0-10.0): ");
-            if (scanner.hasNextDouble()) {
-                rating = scanner.nextDouble();
-                if (rating >= 0 && rating <= 10) {
-                    scanner.nextLine(); // Consume leftover newline
-                    break;
-                } else {
-                    System.out.println("    ⚠️ Invalid rating! Please enter a value between 0.0 and 10.0.");
-                }
-            } else {
-                System.out.println("    ⚠️ Invalid input! Please enter a number.");
-                scanner.next(); // Clear invalid input
-            }
-        }
-
-        // 5. Input genre
-        System.out.print("  👉 Enter the genre (e.g., Drama/Comedy): ");
-        String genre = scanner.nextLine();
-
-        // 6. Input review
-        System.out.print("  👉 Enter a brief review: ");
-        String review = scanner.nextLine();
-
-        // Create & add new movie
-        Movie newMovie = new Movie(title, director, year, rating, genre, review);
-        addMovie.add(newMovie);
-
-        // Polished success feedback (show added movie info)
-        System.out.println("\n=========================================");
-        System.out.println("          ✅ Movie Added Successfully!          ");
-        System.out.println("-----------------------------------------");
-        System.out.printf("  Title:    %s%n", newMovie.getTitle());
-        System.out.printf("  Director: %s%n", newMovie.getDirector());
-        System.out.printf("  Year:     %d%n", newMovie.getYear());
-        System.out.printf("  Rating:   %.1f/10%n", newMovie.getRating());
-        System.out.println("=========================================");
-    }
-
-
-    //3.search movies
-
-    private void searchMovie() {
-        System.out.println("\n╔════════════════════════════════════════════════════╗");
-        System.out.println("║                    Search movie                    ║");
-        System.out.println("╠════════════════════════════════════════════════════╣");
-        System.out.println("║ 1. 🔤 Search by title                              ║");
-        System.out.println("║ 2. 🎥 Search by director                           ║");
-        System.out.println("║ 3. 🏷️ Search by genre                              ║");
-        System.out.println("║ 4. ⭐ Search by rating(>=keyword)                  ║");
-        System.out.println("║ 5. 📅 Search by year                               ║");
-        System.out.println("║ 0. ↩️ Return to the main menu                      ║");
-        System.out.println("╚════════════════════════════════════════════════════╝");
-        System.out.println("Please choose your search method");
-        int choice2 = scanner.nextInt();
-        scanner.nextLine();
-        if (choice2 == 0) return;
-        System.out.print("\nPlease enter the keyword");
-        String keyword = scanner.nextLine().toLowerCase();
-        System.out.println("\nResult:");
-        System.out.println("=".repeat(50));
-        boolean found = false;
-        switch (choice2) {
-            case 1://title
-                for (int i = 0; i < addMovie.size(); i++) {
-                    if (addMovie.get(i).getTitle().toLowerCase().contains(keyword)) {//search the title which contains keyword
-                        System.out.println("[" + (i + 1) + "]" + addMovie.get(i));
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    System.out.println("No relevant movies here");//if there is no movie data relative to the keyword
-                }
-                break;
-
-            case 2://director
-                for (int i = 0; i < addMovie.size(); i++) {
-                    if (addMovie.get(i).getDirector().toLowerCase().contains(keyword)) {
-                        System.out.println("[" + (i + 1) + "]" + addMovie.get(i));
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    System.out.println("No relevant movies here");//if there is no movie data relative to the keyword
-                }
-                break;
-
-            case 3://genre
-                for (int i = 0; i < addMovie.size(); i++) {
-                    if (addMovie.get(i).getGenre().toLowerCase().contains(keyword)) {
-                        System.out.println("[" + (i + 1) + "]" + addMovie.get(i));
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    System.out.println("No relevant movies here");//if there is no movie data relative to the keyword
-                }
-                break;
-
-            case 4://rating
-                boolean judgement1 = false;
-                while (!judgement1) {
-                    try {
-                        double minRating = Double.parseDouble(keyword);//set the minimum of the rating
-                        for (int i = 0; i < addMovie.size(); i++) {
-                            if (addMovie.get(i).getRating() >= minRating) {
-                                System.out.println("[" + (i + 1) + "]" + addMovie.get(i));
-                                found = true;
-                                judgement1 = true;
-                            }
-                        }
-                        if (!found) {
-                            System.out.println("No relevant movies here");//if there is no movie data relative to the keyword
-                        }
-                    } catch (NumberFormatException e) {//check whether the input rating data is correct
-                        System.out.println("Please enter the correct rating number!");
-                        keyword = scanner.nextLine();
-                    }
-
-                }
-                break;
-
-            case 5://year
-                boolean judgement2 = false;
-                while (!judgement2) {
-                    try {
-                        int year = Integer.parseInt(keyword);
-                        for (int i = 0; i < addMovie.size(); i++) {
-                            if (addMovie.get(i).getYear() == year) {
-                                System.out.println("[" + (i + 1) + "]" + addMovie.get(i));
-                                found = true;
-                                judgement2 = true;
-                            }
-                        }
-                        if (!found) {
-                            System.out.println("No relevant movies here");//if there is no movie data relative to the keyword
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Please enter the correct year number!(0 to cancel)");//check whether the input year data is correct
-                        keyword = scanner.nextLine();
-                    }
-                }
-                break;
-
-
-        }
-
-    }
-
-    //4.delete movie data
-
-    private void deleteMovie() {
-        displayAllMovies();
-        if (addMovie.size() == 0) return;
-        System.out.print("\nPlease enter the sequence number of the movie you want to delete(0 to cancel):");
-        int index2 = scanner.nextInt();
-        scanner.nextLine();
-        if (index2 == 0) return;
-        if (index2 > 0 && index2 <= addMovie.size()) {
-            Movie movie = addMovie.get(index2 - 1);
-            System.out.println("\nAre you sure to delete 《" + movie.getTitle() + "》?(Input 'y' to confirm,'other keys' to cancel");
-            String confirm = scanner.nextLine();
-            if (confirm.equalsIgnoreCase("y")) {
-                for (int i = index2 - 1; i < addMovie.size() - 1; i++) {
-                    addMovie.set(i, addMovie.get(i + 1));
-                }
-                addMovie.remove(addMovie.size() - 1);
-                System.out.println("Delete successfully!");
-            } else {
-                System.out.println("Deleted cancelled!");
-            }
-        } else {
-            System.out.println("Invalid serial number!");
-        }
-    }
-
-    //5.Modify movie data
-
-    private void updateMovie() {
-        displayAllMovies();
-        if (addMovie.size() == 0) return;
-        System.out.println("\nPlease enter the sequence(0 to cancel):");
-        int index3 = scanner.nextInt();
-        scanner.nextLine();
-        if (index3 == 0 || index3 >=6) return;
-        if (index3 > 0 && index3 <= addMovie.size()) {
-            Movie movie = addMovie.get(index3 - 1);
-            System.out.println("\nCurrent movie data:");
-            System.out.println(addMovie.get(index3 - 1));
-            System.out.println("\nPlease enter new data:");
-            System.out.print("Movie title [" + movie.getTitle() + "]:");
-            String title2 = scanner.nextLine();
-            if (title2 != null) ;//enter new title
-            movie.setTitle(title2);
-            System.out.print("Director [" + movie.getDirector() + "]:");
-            String director = scanner.nextLine();
-            if (director != null) ;//enter new director
-            movie.setDirector(director);
-            System.out.print("Year[" + movie.getYear() + "](1900-2025):");
-            String year = scanner.nextLine();
-            if (year != null) {//enter new year
-                boolean judgement = false;
-                while (!judgement) {
-                    try {
-                        int Validyear = Integer.parseInt(year);//change String into Int
-                        if (Validyear >= 1900 && Validyear <= 2025) {
-                            movie.setYear(Validyear);
-                            judgement = true;
-                        }else {
-                            System.out.println("Year should between 1900 and 2025!Please re-enter:");
-                            year = scanner.nextLine();
-                        }
-                    } catch (NumberFormatException e) {//check if the year format correct(Int)
-                        System.out.println("Incorrect year format , please re-enter: ");
-                        year = scanner.nextLine();
-                    }
-                }
-            }
-            System.out.print("Movie genre[" + movie.getGenre() + "]:");
-            String genre = scanner.nextLine();
-            if (genre != null) ;
-            movie.setGenre(genre);
-            System.out.print("Review[" + movie.getReview() + "]:");
-            String review = scanner.nextLine();
-            if (review != null) ;
-            movie.setReview(review);
-            System.out.println("\nMovie data update successfully");
-            System.out.println(addMovie.get(index3 - 1));
-        } else {
-            System.out.println("Invalid sequence!");
-        }
-
-    }
-    //6.show the data by ranking level
-
-    private void showDataByRankingLevel() {
-        System.out.println("\n╔════════════════════════════════════════════════════╗");
-        System.out.println("║                   Ranking level                    ║");
-        System.out.println("╠════════════════════════════════════════════════════╣");
-        System.out.println("║ 1. ★★★★★ Masterpiece (>=9.0)                     ║");
-        System.out.println("║ 2. ★★★★☆ Excellent (8.0-8.9)                     ║");
-        System.out.println("║ 3. ★★★☆☆ Good (7.0-7.9)                          ║");
-        System.out.println("║ 4. ★★☆☆☆ Average (6.0-6.9)                       ║");
-        System.out.println("║ 5. ★☆☆☆☆ Poor (<=6.0)                            ║");
-        System.out.println("║ 0. ↩️  Back to main menu                           ║");
-        System.out.println("╚════════════════════════════════════════════════════╝");
-        System.out.print("\nPlease chose the ranking level: ");
-        int choice3 = scanner.nextInt();
-        scanner.nextLine();
-        if (choice3 == 0) return;
-        boolean found = false;
-        System.out.println("=".repeat(50));
+        StringBuilder sb = new StringBuilder("📋 Movie List:\n");
         for (int i = 0; i < addMovie.size(); i++) {
-            double rating = addMovie.get(i).getRating();
-            int Level = addMovie.get(i).getRatingLevel(rating);
-            if (Level == choice3) {
-                System.out.println("[" + (i + 1) + "]" + addMovie.get(i));
+            sb.append(String.format("%d. 《%s》\n", i + 1, addMovie.get(i).getTitle()));
+        }
+        sb.append("\nEnter number to view details (0 to return):");
+
+        String input = JOptionPane.showInputDialog(null, sb.toString());
+        try {
+            int index = Integer.parseInt(input);
+            if (index > 0 && index <= addMovie.size()) {
+                Movie selected = addMovie.get(index - 1);
+                String detail = String.format(
+                        "🎬 Movie Details\n" + "=".repeat(20) +
+                                "\nTitle: %s\nDirector: %s\nYear: %d\nRating: %.1f/10\nGenre: %s\nReview: %s",
+                        selected.getTitle(), selected.getDirector(), selected.getYear(),
+                        selected.getRating(), selected.getGenre(), selected.getReview()
+                );
+                JOptionPane.showMessageDialog(null, detail);
+            }
+        } catch (NumberFormatException ignored) {}
+    }
+
+    // 2. 添加新电影
+    private void addNewMovie() {
+        try {
+            String title = JOptionPane.showInputDialog("Enter Movie Title:");
+            if (title == null) return;
+            String director = JOptionPane.showInputDialog("Enter Director:");
+            int year = Integer.parseInt(JOptionPane.showInputDialog("Enter Year (e.g. 2024):"));
+            double rating = Double.parseDouble(JOptionPane.showInputDialog("Enter Rating (0.0-10.0):"));
+            String genre = JOptionPane.showInputDialog("Enter Genre:");
+            String review = JOptionPane.showInputDialog("Enter Review:");
+
+            addMovie.add(new Movie(title, director, year, rating, genre, review));
+            JOptionPane.showMessageDialog(null, "Added successfully!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Invalid input! Operation cancelled.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // 3. 搜索电影
+    private void searchMovie() {
+        String[] criteria = {"Title", "Director", "Genre", "Rating(>=)", "Year"};
+        int type = JOptionPane.showOptionDialog(null, "Search by:", "Search",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, criteria, criteria[0]);
+
+        if (type == -1) return;
+
+        String keyword = JOptionPane.showInputDialog("Enter keyword:");
+        if (keyword == null || keyword.isEmpty()) return;
+
+        StringBuilder results = new StringBuilder("🔍 Search Results:\n");
+        boolean found = false;
+
+        for (Movie m : addMovie) {
+            boolean match = switch (type) {
+                case 0 -> m.getTitle().toLowerCase().contains(keyword.toLowerCase());
+                case 1 -> m.getDirector().toLowerCase().contains(keyword.toLowerCase());
+                case 2 -> m.getGenre().toLowerCase().contains(keyword.toLowerCase());
+                case 3 -> m.getRating() >= Double.parseDouble(keyword);
+                case 4 -> m.getYear() == Integer.parseInt(keyword);
+                default -> false;
+            };
+
+            if (match) {
+                results.append(m.toString()).append("\n");
                 found = true;
             }
         }
-        if (!found){
-            System.out.println("There is no such movie");
-            System.out.println("=".repeat(50));
-        }else {
-            System.out.println("=".repeat(50));
+
+        JOptionPane.showMessageDialog(null, found ? results.toString() : "No relevant movies found.");
+    }
+
+    // 4. 删除电影
+    private void deleteMovie() {
+        if (addMovie.isEmpty()) return;
+
+        String input = JOptionPane.showInputDialog("Enter the sequence number to delete:");
+        try {
+            int index = Integer.parseInt(input);
+            if (index > 0 && index <= addMovie.size()) {
+                Movie m = addMovie.get(index - 1);
+                int confirm = JOptionPane.showConfirmDialog(null,
+                        "Are you sure to delete 《" + m.getTitle() + "》?", "Confirm", JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    addMovie.remove(index - 1);
+                    JOptionPane.showMessageDialog(null, "Deleted successfully!");
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Invalid selection.");
+        }
+    }
+
+    // 5. 修改电影信息
+    private void updateMovie() {
+        if (addMovie.isEmpty()) return;
+        String input = JOptionPane.showInputDialog("Enter sequence number to modify:");
+        try {
+            int index = Integer.parseInt(input);
+            if (index > 0 && index <= addMovie.size()) {
+                Movie m = addMovie.get(index - 1);
+
+                String newTitle = JOptionPane.showInputDialog("New Title [" + m.getTitle() + "]:", m.getTitle());
+                if (newTitle != null) m.setTitle(newTitle);
+
+                String newRating = JOptionPane.showInputDialog("New Rating [" + m.getRating() + "]:", m.getRating());
+                if (newRating != null) m.setRating(Double.parseDouble(newRating));
+
+                JOptionPane.showMessageDialog(null, "Updated successfully!");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Update failed.");
+        }
+    }
+
+    // 6. 按评分等级显示
+    private void showDataByRankingLevel() {
+        String[] levels = {"1. Masterpiece(>=9.0)", "2. Excellent(8.0-8.9)", "3. Good(7.0-7.9)", "4. Average(6.0-6.9)", "5. Poor(<6.0)"};
+        String choice = (String) JOptionPane.showInputDialog(null, "Select Level:", "Ranking Level",
+                JOptionPane.QUESTION_MESSAGE, null, levels, levels[0]);
+
+        if (choice == null) return;
+        int levelNum = Character.getNumericValue(choice.charAt(0));
+
+        StringBuilder sb = new StringBuilder("Level " + levelNum + " Movies:\n");
+        boolean found = false;
+        for (Movie m : addMovie) {
+            if (m.getRatingLevel(m.getRating()) == levelNum) {
+                sb.append(m.toString()).append("\n");
+                found = true;
+            }
+        }
+        JOptionPane.showMessageDialog(null, found ? sb.toString() : "No movies in this level.");
+    }
+
+    // 7. 评分排行榜
+    private void showRatingRanking() {
+        if (addMovie.isEmpty()) return;
+
+        ArrayList<Movie> sortedList = new ArrayList<>(addMovie);
+        // 冒泡排序逻辑
+        for (int i = 0; i < sortedList.size() - 1; i++) {
+            for (int j = 0; j < sortedList.size() - 1 - i; j++) {
+                if (sortedList.get(j).getRating() < sortedList.get(j + 1).getRating()) {
+                    Movie temp = sortedList.get(j);
+                    sortedList.set(j, sortedList.get(j + 1));
+                    sortedList.set(j + 1, temp);
+                }
+            }
         }
 
-
+        StringBuilder sb = new StringBuilder("🏆 Movie Rating Ranking:\n");
+        for (int i = 0; i < sortedList.size(); i++) {
+            Movie m = sortedList.get(i);
+            sb.append(String.format("Rank %d: %.1f - %s\n", i + 1, m.getRating(), m.getTitle()));
+        }
+        JOptionPane.showMessageDialog(null, sb.toString());
     }
 }
