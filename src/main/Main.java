@@ -1,11 +1,14 @@
+package main;
+
+import controller.MovieManager;
+
 import javax.swing.JOptionPane;
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         JOptionPane.showMessageDialog(
                 null,
-                "Welcome to Douban Movie Management System",
+                "Welcome to Douban models.Movie Management System",
                 "Welcome",
                 JOptionPane.INFORMATION_MESSAGE
         );
@@ -52,7 +55,7 @@ public class Main {
             );
         }
 
-        // 5. 后续电影管理逻辑不变
+
         MovieManager manager = new MovieManager();
         manager.initializeSimpleMovies();
         manager.showMainMenu();

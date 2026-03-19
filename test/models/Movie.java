@@ -1,9 +1,6 @@
-//
+package models;//
 // Source code recreated from a .class file by IntelliJ IDEA
 // (powered by Fer
-
-import java.util.ArrayList;
-import java.util.logging.Level;
 
 public class Movie {
     private String title;

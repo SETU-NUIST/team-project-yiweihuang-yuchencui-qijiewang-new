@@ -1,7 +1,11 @@
+package controller;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import models.Movie;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,14 +13,10 @@ import java.io.IOException;
 
 public class MovieManager {
     private ArrayList<Movie> addMovie = new ArrayList<>();
-    // 保存电影列表到 XML 文件
     public void saveToXML() {
         XStream xstream = new XStream(new DomDriver());
-        // 允许序列化 Movie 类
         xstream.allowTypes(new Class[]{Movie.class});
-
         try (FileWriter writer = new FileWriter("movies.xml")) {
-            // 将 ArrayList<Movie> 转为 XML 并写入文件
             xstream.toXML(addMovie, writer);
             JOptionPane.showMessageDialog(
                     null,
@@ -33,16 +33,12 @@ public class MovieManager {
             );
         }
     }
-    // 从 XML 文件加载电影列表
+
     public void loadFromXML() {
         XStream xstream = new XStream(new DomDriver());
-        // 允许反序列化 Movie 和 ArrayList 类
         xstream.allowTypes(new Class[]{Movie.class, ArrayList.class});
-
         try (FileReader reader = new FileReader("movies.xml")) {
-            // 从 XML 读取并转换为 ArrayList<Movie>
             ArrayList<Movie> loadedMovies = (ArrayList<Movie>) xstream.fromXML(reader);
-            // 清空当前数据，加载新数据
             addMovie.clear();
             addMovie.addAll(loadedMovies);
             JOptionPane.showMessageDialog(
@@ -100,7 +96,7 @@ public class MovieManager {
             int choice = JOptionPane.showOptionDialog(
                     null,
                     "Please select an operation:",
-                    "Douban Movie Manager",
+                    "Douban models.Movie Manager",
                     JOptionPane.DEFAULT_OPTION,
                     JOptionPane.PLAIN_MESSAGE,
                     null,
@@ -139,7 +135,7 @@ public class MovieManager {
             return;
         }
 
-        StringBuilder sb = new StringBuilder("📋 Movie List:\n");
+        StringBuilder sb = new StringBuilder("📋 models.Movie List:\n");
         for (int i = 0; i < addMovie.size(); i++) {
             sb.append(String.format("%d. 《%s》\n", i + 1, addMovie.get(i).getTitle()));
         }
@@ -151,7 +147,7 @@ public class MovieManager {
             if (index > 0 && index <= addMovie.size()) {
                 Movie selected = addMovie.get(index - 1);
                 String detail = String.format(
-                        "🎬 Movie Details\n" + "=".repeat(20) +
+                        "🎬 models.Movie Details\n" + "=".repeat(20) +
                                 "\nTitle: %s\nDirector: %s\nYear: %d\nRating: %.1f/10\nGenre: %s\nReview: %s",
                         selected.getTitle(), selected.getDirector(), selected.getYear(),
                         selected.getRating(), selected.getGenre(), selected.getReview()
@@ -164,7 +160,7 @@ public class MovieManager {
     // 2. 添加新电影
     private void addNewMovie() {
         try {
-            String title = JOptionPane.showInputDialog("Enter Movie Title:");
+            String title = JOptionPane.showInputDialog("Enter models.Movie Title:");
             if (title == null) return;
             String director = JOptionPane.showInputDialog("Enter Director:");
             int year = Integer.parseInt(JOptionPane.showInputDialog("Enter Year (e.g. 2024):"));
@@ -292,7 +288,7 @@ public class MovieManager {
             }
         }
 
-        StringBuilder sb = new StringBuilder("🏆 Movie Rating Ranking:\n");
+        StringBuilder sb = new StringBuilder("🏆 models.Movie Rating Ranking:\n");
         for (int i = 0; i < sortedList.size(); i++) {
             Movie m = sortedList.get(i);
             sb.append(String.format("Rank %d: %.1f - %s\n", i + 1, m.getRating(), m.getTitle()));
