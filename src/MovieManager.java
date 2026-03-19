@@ -9,14 +9,10 @@ import java.io.IOException;
 
 public class MovieManager {
     private ArrayList<Movie> addMovie = new ArrayList<>();
-    // 保存电影列表到 XML 文件
     public void saveToXML() {
         XStream xstream = new XStream(new DomDriver());
-        // 允许序列化 Movie 类
         xstream.allowTypes(new Class[]{Movie.class});
-
         try (FileWriter writer = new FileWriter("movies.xml")) {
-            // 将 ArrayList<Movie> 转为 XML 并写入文件
             xstream.toXML(addMovie, writer);
             JOptionPane.showMessageDialog(
                     null,
@@ -33,16 +29,12 @@ public class MovieManager {
             );
         }
     }
-    // 从 XML 文件加载电影列表
+
     public void loadFromXML() {
         XStream xstream = new XStream(new DomDriver());
-        // 允许反序列化 Movie 和 ArrayList 类
         xstream.allowTypes(new Class[]{Movie.class, ArrayList.class});
-
         try (FileReader reader = new FileReader("movies.xml")) {
-            // 从 XML 读取并转换为 ArrayList<Movie>
             ArrayList<Movie> loadedMovies = (ArrayList<Movie>) xstream.fromXML(reader);
-            // 清空当前数据，加载新数据
             addMovie.clear();
             addMovie.addAll(loadedMovies);
             JOptionPane.showMessageDialog(

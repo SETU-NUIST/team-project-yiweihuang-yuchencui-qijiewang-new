@@ -52,7 +52,7 @@ public class Main {
             );
         }
 
-        // 5. 后续电影管理逻辑不变
+
         MovieManager manager = new MovieManager();
         manager.initializeSimpleMovies();
         manager.showMainMenu();
