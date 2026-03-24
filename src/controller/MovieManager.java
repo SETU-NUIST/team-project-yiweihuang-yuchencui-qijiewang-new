@@ -77,34 +77,21 @@ public class MovieManager {
      * 主菜单界面
      */
     public void showMainMenu() {
+        String[] options = {
+                "View all", "Add", "Search", "Delete", "Modify",
+                "By Level", "Ranking", "Save XML", "Load XML", "Log out"
+        };
+
         while (true) {
-            // 1. 定义菜单选项（顺序和 case 严格对应）
-            String[] options = {
-                    "1. View all movies",
-                    "2. Add new movie",
-                    "3. Search movies",
-                    "4. Delete movie",
-                    "5. Modify movie",
-                    "6. Show data by ranking level",
-                    "7. Rating list",
-                    "8. Save to XML",
-                    "9. Load from XML",
-                    "0. Log out"
-            };
+            int choice = JOptionPane.showOptionDialog(null, "Select operation:",
+                    "Movie Manager", 0, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
-            // 2. 弹出选择对话框
-            int choice = JOptionPane.showOptionDialog(
-                    null,
-                    "Please select an operation:",
-                    "Douban models.Movie Manager",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
+            if (choice == -1 || choice == 9) { // 点击关闭或选择 Log out
+                JOptionPane.showMessageDialog(null, "Logged out!");
+                return;
+            }
 
-            // 3. 优先处理菜单功能（switch 放在前面）
+            // 利用一行式 switch 或直接调用，大大缩减长度
             switch (choice) {
                 case 0 -> displayAllMovies();
                 case 1 -> addNewMovie();
@@ -113,20 +100,11 @@ public class MovieManager {
                 case 4 -> updateMovie();
                 case 5 -> showDataByRankingLevel();
                 case 6 -> showRatingRanking();
-                case 7 -> saveToXML();      // 绑定保存XML
-                case 8 -> loadFromXML();   // 绑定加载XML
-                case 9 -> {                // 手动选择 Log out 时退出
-                    JOptionPane.showMessageDialog(null, "Logged out successfully!");
-                    return; // 退出整个菜单循环
-                }
-                case -1 -> { // 点击窗口关闭按钮时退出
-                    JOptionPane.showMessageDialog(null, "Logged out successfully!");
-                    return;
-                }
+                case 7 -> saveToXML();
+                case 8 -> loadFromXML();
             }
         }
     }
-
 
     // 1. 查看所有电影
     public void displayAllMovies() {
